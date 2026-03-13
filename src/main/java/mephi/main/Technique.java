@@ -4,6 +4,8 @@ public class Technique {
     private String name;
     private String type;
     private long damage;
+    private String owner;
+
 
     public Technique() {}
 
@@ -29,5 +31,13 @@ public class Technique {
 
     public void setDamage(long damage) {
         this.damage = damage;
+    }
+
+    public String getOwner() {
+        return owner;
+    }
+
+    public void setOwner(String owner) {
+        this.owner = owner;
     }
 }

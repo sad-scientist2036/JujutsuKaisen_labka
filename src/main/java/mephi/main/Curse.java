@@ -1,9 +1,10 @@
 package mephi.main;
 
 public class Curse {
-    String name;
-    String threatLevel;
-    Technique technique;
+    private String name;
+    private String threatLevel;
+    private Technique technique;
+    public Curse() {}
     public Curse(String name, String threatLevel) {
         this.name = name;
         this.threatLevel = threatLevel;

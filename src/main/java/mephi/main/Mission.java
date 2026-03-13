@@ -1,22 +1,26 @@
 package mephi.main;
 
-import java.time.LocalDate;
+import com.fasterxml.jackson.annotation.JsonSetter;
+import com.fasterxml.jackson.annotation.JsonAlias;
 import java.util.ArrayList;
+import java.util.List;
 
 public class Mission {
     private String missionId;
-    private LocalDate date;
+    private String date;
     private String location;
     private String outcome;
     private long damageCost;
     private String note;
 
-    private ArrayList<Curse> curses;
-    private ArrayList<Sorcerer> sorcerers;
+    private List<Curse> curse;
+    private List<Sorcerer> sorcerer;
+    private List<Technique> technique;
 
     public Mission() {
-        this.curses = new ArrayList<>();
-        this.sorcerers = new ArrayList<>();
+        this.curse = new ArrayList<>();
+        this.sorcerer = new ArrayList<>();
+        this.technique = new ArrayList<>();
     }
 
     public String getMissionId() {
@@ -27,11 +31,11 @@ public class Mission {
         this.missionId = missionId;
     }
 
-    public LocalDate getDate() {
+    public String getDate() {
         return date;
     }
 
-    public void setDate(LocalDate date) {
+    public void setDate(String date) {
         this.date = date;
     }
 
@@ -67,27 +71,45 @@ public class Mission {
         this.note = note;
     }
 
-    public ArrayList<Curse> getCurses() {
-        return curses;
+    public List<Curse> getCurse() {
+        return curse;
     }
 
-    public void setCurses(ArrayList<Curse> curses) {
-        this.curses = curses;
+    @JsonSetter("curse")
+    @JsonAlias({"curses"})
+    public void setCurse(List<Curse> curse) {
+        this.curse = curse;
     }
 
-    public ArrayList<Sorcerer> getSorcerers() {
-        return sorcerers;
+    public List<Sorcerer> getSorcerer() {
+        return sorcerer;
     }
 
-    public void setSorcerers(ArrayList<Sorcerer> sorcerers) {
-        this.sorcerers = sorcerers;
+    @JsonSetter("sorcerer")
+    @JsonAlias({"sorcerers"})
+    public void setSorcerer(List<Sorcerer> sorcerer) {
+        this.sorcerer = sorcerer;
+    }
+
+    public List<Technique> getTechnique() {
+        return technique;
+    }
+
+    @JsonSetter("technique")
+    @JsonAlias({"techniques"})
+    public void setTechnique(List<Technique> technique) {
+        this.technique = technique;
     }
 
     public void addCurse(Curse curse) {
-        this.curses.add(curse);
+        this.curse.add(curse);
     }
 
     public void addSorcerer(Sorcerer sorcerer) {
-        this.sorcerers.add(sorcerer);
+        this.sorcerer.add(sorcerer);
+    }
+
+    public void addTechnique(Technique technique) {
+        this.technique.add(technique);
     }
 }
