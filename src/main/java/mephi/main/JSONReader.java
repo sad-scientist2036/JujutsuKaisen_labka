@@ -6,7 +6,6 @@ import java.io.File;
 import java.io.IOException;
 
 public class JSONReader implements FileReader {
-
     private ObjectMapper mapper;
 
     public JSONReader() {
