@@ -1,5 +1,14 @@
 package mephi.main;
 
+import mephi.main.mission.Mission;
+import mephi.main.reader.FileReader;
+import mephi.main.reader.ParserFactory;
+import mephi.main.reader.format.JSONReader;
+import mephi.main.reader.format.TxtReader;
+import mephi.main.reader.format.XMLReader;
+import mephi.main.reader.format.YamlReader;
+import mephi.main.report.*;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -12,6 +21,16 @@ public class MissionGUI extends JFrame {
     private JButton selectFileButton;
     private JTextArea outputArea;
     private JScrollPane scrollPane;
+
+    // Чекбоксы для выбора информации
+    private JCheckBox curseCheckBox;
+    private JCheckBox sorcerersCheckBox;
+    private JCheckBox techniquesCheckBox;
+    private JCheckBox enemyActivityCheckBox;
+    private JCheckBox economicCheckBox;
+
+    private JButton generateReportButton;
+    private Mission currentMission;
 
     public MissionGUI() {
         setTitle("Анализатор миссий магов");
@@ -28,6 +47,38 @@ public class MissionGUI extends JFrame {
             }
         });
 
+        // Панель с чекбоксами
+        JPanel checkBoxPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        checkBoxPanel.setBorder(BorderFactory.createTitledBorder("Выберите информацию для отчета"));
+
+        curseCheckBox = new JCheckBox("Проклятие", true);
+        sorcerersCheckBox = new JCheckBox("Участники", true);
+        techniquesCheckBox = new JCheckBox("Техники", true);
+        enemyActivityCheckBox = new JCheckBox("Активность врага", false);
+        economicCheckBox = new JCheckBox("Экономическая оценка", false);
+
+        checkBoxPanel.add(curseCheckBox);
+        checkBoxPanel.add(sorcerersCheckBox);
+        checkBoxPanel.add(techniquesCheckBox);
+        checkBoxPanel.add(enemyActivityCheckBox);
+        checkBoxPanel.add(economicCheckBox);
+
+        // Кнопка формирования отчета
+        generateReportButton = new JButton("Сформировать отчет");
+        generateReportButton.setFont(new Font("Arial", Font.BOLD, 12));
+        generateReportButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                generateReport();
+            }
+        });
+
+        // Верхняя панель
+        JPanel topPanel = new JPanel(new BorderLayout());
+        topPanel.add(selectFileButton, BorderLayout.NORTH);
+        topPanel.add(checkBoxPanel, BorderLayout.CENTER);
+        topPanel.add(generateReportButton, BorderLayout.SOUTH);
+
         outputArea = new JTextArea();
         outputArea.setEditable(false);
         outputArea.setFont(new Font("Monospaced", Font.PLAIN, 12));
@@ -36,7 +87,7 @@ public class MissionGUI extends JFrame {
         scrollPane.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
         setLayout(new BorderLayout());
-        add(selectFileButton, BorderLayout.NORTH);
+        add(topPanel, BorderLayout.NORTH);
         add(scrollPane, BorderLayout.CENTER);
     }
 
@@ -57,9 +108,10 @@ public class MissionGUI extends JFrame {
             outputArea.setText("");
 
             FileReader reader = createReader(file);
-            Mission mission = reader.read(file);
+            currentMission = reader.read(file);
 
-            displayMissionInfo(mission);
+            outputArea.append("✅ Файл успешно загружен: " + file.getName() + "\n");
+            outputArea.append("Нажмите 'Сформировать отчет' для вывода информации.\n");
 
         } catch (Exception e) {
             outputArea.setText("");
@@ -70,86 +122,65 @@ public class MissionGUI extends JFrame {
         }
     }
 
+    private void generateReport() {
+        if (currentMission == null) {
+            outputArea.setText("Сначала выберите файл миссии!");
+            return;
+        }
+
+        // Начинаем с базового отчета
+        Report report = new SimpleReport();
+
+        // Оборачиваем декораторами в зависимости от выбранных чекбоксов
+        if (curseCheckBox.isSelected()) {
+            report = new CursesDecorator(report);
+        }
+        if (sorcerersCheckBox.isSelected()) {
+            report = new SorcerersDecorator(report);
+        }
+        if (techniquesCheckBox.isSelected()) {
+            report = new TechniquesDecorator(report);
+        }
+        if (enemyActivityCheckBox.isSelected()) {
+            report = new EnemyActivityDecorator(report);
+        }
+        if (economicCheckBox.isSelected()) {
+            report = new EconomicDecorator(report);
+        }
+
+        // Генерируем отчет
+        String result = report.generate(currentMission);
+
+        // Выводим
+        outputArea.setText(result);
+    }
+
     private FileReader createReader(File file) throws IOException {
         String fileName = file.getName().toLowerCase();
 
         if (fileName.endsWith(".json")) {
-            outputArea.append(" Обнаружен JSON файл\n\n");
+            outputArea.append("Обнаружен JSON файл\n\n");
             return new JSONReader();
         } else if (fileName.endsWith(".xml")) {
-            outputArea.append(" Обнаружен XML файл\n\n");
+            outputArea.append("Обнаружен XML файл\n\n");
             return new XMLReader();
         } else if (fileName.endsWith(".txt")) {
-            outputArea.append(" Обнаружен TXT файл\n\n");
+            outputArea.append("Обнаружен TXT файл\n\n");
             return new TxtReader();
+        } else if (fileName.endsWith(".yaml") || fileName.endsWith(".yml")) {
+            outputArea.append("Обнаружен YAML файл\n\n");
+            return new YamlReader();
         } else {
             throw new IOException("Неподдерживаемый формат файла: " + fileName);
         }
     }
 
-    private void displayMissionInfo(Mission mission) {
-        outputArea.append("Информация о миссии\n");
-        outputArea.append("ID миссии:    " + (mission.getMissionId() != null ? mission.getMissionId() : "Не указано") + "\n");
-        outputArea.append("Дата:         " + (mission.getDate() != null ? mission.getDate() : "Не указана") + "\n");
-        outputArea.append("Локация:      " + (mission.getLocation() != null ? mission.getLocation() : "Не указано") + "\n");
-        outputArea.append("Итог:         " + (mission.getOutcome() != null ? mission.getOutcome() : "Не указано") + "\n");
-        outputArea.append("Ущерб:        " + mission.getDamageCost() + " йен\n");
-
-        outputArea.append("\n Проклятья \n");
-        if (mission.getCurse() != null && !mission.getCurse().isEmpty()) {
-            for (int i = 0; i < mission.getCurse().size(); i++) {
-                Curse curse = mission.getCurse().get(i);
-                outputArea.append("Проклятие " + (i + 1) + ":\n");
-                outputArea.append("  Имя:    " + (curse.getName() != null ? curse.getName() : "Не указано") + "\n");
-                outputArea.append("  Уровень: " + (curse.getThreatLevel() != null ? curse.getThreatLevel() : "Не указано") + "\n");
-                if (curse.getTechnique() != null) {
-                    outputArea.append("  Техника: " + (curse.getTechnique().getName() != null ? curse.getTechnique().getName() : "Не указано") + "\n");
-                }
-                outputArea.append("\n");
+    public static void main(String[] args) {
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                new MissionGUI().setVisible(true);
             }
-        } else {
-            outputArea.append("  Нет данных о проклятиях\n");
-        }
-
-        outputArea.append("Участники\n");
-        if (mission.getSorcerer() != null && !mission.getSorcerer().isEmpty()) {
-            for (int i = 0; i < mission.getSorcerer().size(); i++) {
-                Sorcerer sorcerer = mission.getSorcerer().get(i);
-                outputArea.append("Маг #" + (i + 1) + ":\n");
-                outputArea.append("  Имя:    " + (sorcerer.getName() != null ? sorcerer.getName() : "Не указано") + "\n");
-                outputArea.append("  Ранг:   " + (sorcerer.getRank() != null ? sorcerer.getRank() : "Не указано") + "\n");
-                if (sorcerer.getTechnique() != null) {
-                    Technique t = sorcerer.getTechnique();
-                    outputArea.append("  Техника: " + (t.getName() != null ? t.getName() : "Не указано") + "\n");
-                    outputArea.append("  Тип:     " + (t.getType() != null ? t.getType() : "Не указано") + "\n");
-                    outputArea.append("  Урон:    " + t.getDamage() + " ед.\n");
-                }
-                outputArea.append("\n");
-            }
-        } else {
-            outputArea.append("  Нет данных об участниках\n");
-        }
-
-        outputArea.append("Техники\n");
-        if (mission.getTechnique() != null && !mission.getTechnique().isEmpty()) {
-            for (int i = 0; i < mission.getTechnique().size(); i++) {
-                Technique technique = mission.getTechnique().get(i);
-                outputArea.append("Техника #" + (i + 1) + ":\n");
-                outputArea.append("  Название: " + (technique.getName() != null ? technique.getName() : "Не указано") + "\n");
-                outputArea.append("  Тип:      " + (technique.getType() != null ? technique.getType() : "Не указано") + "\n");
-                outputArea.append("  Урон:     " + technique.getDamage() + " ед.\n");
-                if (technique.getOwner() != null) {
-                    outputArea.append("  Владелец: " + technique.getOwner() + "\n");
-                }
-                outputArea.append("\n");
-            }
-        } else {
-            outputArea.append("  Нет данных о техниках\n");
-        }
-
-        if (mission.getNote() != null && !mission.getNote().isEmpty()) {
-            outputArea.append("Комментарий \n");
-            outputArea.append(mission.getNote() + "\n");
-        }
+        });
     }
 }
