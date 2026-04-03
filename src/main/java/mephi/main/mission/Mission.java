@@ -15,7 +15,7 @@ public class Mission {
     private long damageCost;
     private String note;
 
-     private final List<SorcererComponent> sorcerers = new ArrayList<>();
+    private final List<SorcererComponent> sorcerers = new ArrayList<>();
     private final List<TechniqueComponent> techniques = new ArrayList<>();
     private final List<OperationTimelineComponent> timeline = new ArrayList<>();
     private final Map<String, MissionComponent> components = new HashMap<>();
