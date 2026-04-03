@@ -1,31 +1,33 @@
 package mephi.main.mission;
 
+import mephi.main.mission.components.OperationTimelineComponent;
 import mephi.main.mission.components.SorcererComponent;
 import mephi.main.mission.components.TechniqueComponent;
+import mephi.main.mission.enums.Outcome;
 import java.util.*;
 
 public class Mission {
-    // Core
+
     private String missionId;
     private String date;
     private String location;
-    private String outcome;
+    private Outcome outcome;
     private long damageCost;
+    private String note;
 
-    // Коллекции
-    private final List<SorcererComponent> sorcerers = new ArrayList<>();
+     private final List<SorcererComponent> sorcerers = new ArrayList<>();
     private final List<TechniqueComponent> techniques = new ArrayList<>();
+    private final List<OperationTimelineComponent> timeline = new ArrayList<>();
     private final Map<String, MissionComponent> components = new HashMap<>();
 
-    // ПУБЛИЧНЫЙ конструктор — для Jackson
     public Mission() {}
 
-    // ПУБЛИЧНЫЕ геттеры
     public String getMissionId() { return missionId; }
     public String getDate() { return date; }
     public String getLocation() { return location; }
-    public String getOutcome() { return outcome; }
+    public Outcome getOutcome() { return outcome; }
     public long getDamageCost() { return damageCost; }
+    public String getNote() { return note; }
 
     public List<SorcererComponent> getSorcerers() {
         return Collections.unmodifiableList(sorcerers);
@@ -35,11 +37,16 @@ public class Mission {
         return Collections.unmodifiableList(techniques);
     }
 
+    public List<OperationTimelineComponent> getTimeline() {
+        return Collections.unmodifiableList(timeline);
+    }
+
     public void setMissionId(String missionId) { this.missionId = missionId; }
     public void setDate(String date) { this.date = date; }
     public void setLocation(String location) { this.location = location; }
-    public void setOutcome(String outcome) { this.outcome = outcome; }
+    public void setOutcome(Outcome outcome) { this.outcome = outcome; }
     public void setDamageCost(long damageCost) { this.damageCost = damageCost; }
+    public void setNote(String note) { this.note = note; }
 
     public void addSorcerer(SorcererComponent sorcerer) {
         this.sorcerers.add(sorcerer);
@@ -49,12 +56,12 @@ public class Mission {
         this.techniques.add(technique);
     }
 
-    public void addComponent(MissionComponent component) {
-        this.components.put(component.getComponentType(), component);
+    public void addTimelineEvent(OperationTimelineComponent event) {
+        this.timeline.add(event);
     }
 
-    public Optional<MissionComponent> getComponent(String type) {
-        return Optional.ofNullable(components.get(type));
+    public void addComponent(MissionComponent component) {
+        this.components.put(component.getComponentType(), component);
     }
 
     @SuppressWarnings("unchecked")
@@ -63,8 +70,5 @@ public class Mission {
                 .filter(type::isInstance)
                 .map(c -> (T) c)
                 .findFirst();
-    }
-    public Collection<MissionComponent> getAllComponents() {
-        return Collections.unmodifiableCollection(components.values());
     }
 }

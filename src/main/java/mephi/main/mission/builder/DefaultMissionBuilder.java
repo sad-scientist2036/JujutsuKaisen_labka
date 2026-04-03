@@ -2,8 +2,10 @@ package mephi.main.mission.builder;
 
 import mephi.main.mission.Mission;
 import mephi.main.mission.MissionComponent;
+import mephi.main.mission.components.OperationTimelineComponent;
 import mephi.main.mission.components.SorcererComponent;
 import mephi.main.mission.components.TechniqueComponent;
+import mephi.main.mission.enums.Outcome;
 
 public class DefaultMissionBuilder implements MissionBuilder {
 
@@ -39,13 +41,19 @@ public class DefaultMissionBuilder implements MissionBuilder {
 
     @Override
     public MissionBuilder setOutcome(String outcome) {
-        mission.setOutcome(outcome);
+        mission.setOutcome(Outcome.fromString(outcome));
         return this;
     }
 
     @Override
     public MissionBuilder setDamageCost(long damageCost) {
         mission.setDamageCost(damageCost);
+        return this;
+    }
+
+    @Override
+    public MissionBuilder setNote(String note) {
+        mission.setNote(note);
         return this;
     }
 
@@ -68,6 +76,12 @@ public class DefaultMissionBuilder implements MissionBuilder {
     }
 
     @Override
+    public MissionBuilder addTimelineEvent(OperationTimelineComponent event) {
+        mission.addTimelineEvent(event);
+        return this;
+    }
+
+    @Override
     public Mission build() {
         if (mission.getMissionId() == null || mission.getMissionId().isEmpty()) {
             throw new IllegalStateException("missionId is required");
@@ -78,7 +92,7 @@ public class DefaultMissionBuilder implements MissionBuilder {
         if (mission.getLocation() == null || mission.getLocation().isEmpty()) {
             throw new IllegalStateException("location is required");
         }
-        if (mission.getOutcome() == null || mission.getOutcome().isEmpty()) {
+        if (mission.getOutcome() == null) {
             throw new IllegalStateException("outcome is required");
         }
         return mission;

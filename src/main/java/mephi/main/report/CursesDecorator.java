@@ -18,7 +18,7 @@ public class CursesDecorator extends ReportDecorator {
 
         mission.getComponent(CurseComponent.class).ifPresent(curse -> {
             sb.append("  Имя:    ").append(curse.getName()).append("\n");
-            sb.append("  Уровень: ").append(curse.getThreatLevel()).append("\n");
+            sb.append("  Уровень: ").append(curse.getThreatLevel() != null ? curse.getThreatLevel() : "Не указано").append("\n");
         });
 
         return sb.toString();

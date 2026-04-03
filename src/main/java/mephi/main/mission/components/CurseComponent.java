@@ -1,10 +1,11 @@
 package mephi.main.mission.components;
 
 import mephi.main.mission.MissionComponent;
+import mephi.main.mission.enums.ThreatLevel;
 
 public class CurseComponent implements MissionComponent {
     private String name;
-    private String threatLevel;
+    private ThreatLevel threatLevel;
 
     public CurseComponent() {}
 
@@ -19,10 +20,10 @@ public class CurseComponent implements MissionComponent {
     }
 
     public String getName() { return name; }
-    public String getThreatLevel() { return threatLevel; }
+    public ThreatLevel getThreatLevel() { return threatLevel; }
 
     public void setName(String name) { this.name = name; }
-    public void setThreatLevel(String threatLevel) { this.threatLevel = threatLevel; }
+    public void setThreatLevel(ThreatLevel threatLevel) { this.threatLevel = threatLevel; }
 
     public static class Builder {
         private final CurseComponent component = new CurseComponent();
@@ -33,7 +34,7 @@ public class CurseComponent implements MissionComponent {
         }
 
         public Builder threatLevel(String threatLevel) {
-            component.threatLevel = threatLevel;
+            component.threatLevel = ThreatLevel.fromString(threatLevel);
             return this;
         }
 

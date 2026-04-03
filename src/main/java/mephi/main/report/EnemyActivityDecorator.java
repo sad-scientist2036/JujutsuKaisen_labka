@@ -23,8 +23,12 @@ public class EnemyActivityDecorator extends ReportDecorator {
                 sb.append("  Мобильность: ").append(enemy.getMobility()).append("\n");
             if (enemy.getEscalationRisk() != null)
                 sb.append("  Риск эскалации: ").append(enemy.getEscalationRisk()).append("\n");
+            if (!enemy.getTargetPriority().isEmpty())
+                sb.append("  Приоритет целей: ").append(enemy.getTargetPriority()).append("\n");
             if (!enemy.getAttackPatterns().isEmpty())
                 sb.append("  Паттерны атак: ").append(enemy.getAttackPatterns()).append("\n");
+            if (!enemy.getCountermeasuresUsed().isEmpty())
+                sb.append("  Использованные контрмеры: ").append(enemy.getCountermeasuresUsed()).append("\n");
         });
 
         return sb.toString();

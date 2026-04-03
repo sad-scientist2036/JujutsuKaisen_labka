@@ -1,13 +1,11 @@
 package mephi.main.mission.components;
 
 import mephi.main.mission.MissionComponent;
+import mephi.main.mission.enums.TechniqueType;
 
-/**
- * Leaf — компонент, хранящий информацию о технике.
- */
 public class TechniqueComponent implements MissionComponent {
     private String name;
-    private String type;
+    private TechniqueType type;
     private String owner;
     private long damage;
 
@@ -24,12 +22,12 @@ public class TechniqueComponent implements MissionComponent {
     }
 
     public String getName() { return name; }
-    public String getType() { return type; }
+    public TechniqueType getType() { return type; }
     public String getOwner() { return owner; }
     public long getDamage() { return damage; }
 
     public void setName(String name) { this.name = name; }
-    public void setType(String type) { this.type = type; }
+    public void setType(TechniqueType type) { this.type = type; }
     public void setOwner(String owner) { this.owner = owner; }
     public void setDamage(long damage) { this.damage = damage; }
 
@@ -42,7 +40,7 @@ public class TechniqueComponent implements MissionComponent {
         }
 
         public Builder type(String type) {
-            component.type = type;
+            component.type = TechniqueType.fromString(type);
             return this;
         }
 

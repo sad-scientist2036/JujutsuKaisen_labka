@@ -86,7 +86,6 @@ public class YamlReader implements FileReader {
             builder.addComponent(economic);
         }
 
-        // Enemy Activity
         JsonNode enemyNode = root.get("enemyActivity");
         if (enemyNode != null && !enemyNode.isNull()) {
             EnemyActivityComponent.Builder enemyBuilder = new EnemyActivityComponent.Builder()

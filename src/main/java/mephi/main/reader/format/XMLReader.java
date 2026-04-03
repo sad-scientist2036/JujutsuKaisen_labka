@@ -17,13 +17,9 @@ public class XMLReader implements FileReader {
     @Override
     public Mission read(File file) throws IOException {
         JsonNode root = mapper.readTree(file);
-        JsonNode testNode = root.get("sorcerers");
-        if (testNode != null) {
-            System.out.println("sorcerers node type: " + testNode.getNodeType());
-            System.out.println("sorcerers node: " + testNode);
-        }
 
         MissionBuilder builder = new DefaultMissionBuilder();
+
         builder.setMissionId(getText(root, "missionId"))
                 .setDate(getText(root, "date"))
                 .setLocation(getText(root, "location"))
@@ -41,43 +37,32 @@ public class XMLReader implements FileReader {
 
         JsonNode sorcerersNode = root.get("sorcerers");
         if (sorcerersNode != null && !sorcerersNode.isNull()) {
-
-            if (sorcerersNode.isArray()) {
-                for (JsonNode sNode : sorcerersNode) {
-                    addSorcerer(builder, sNode);
-                }
-            }
-            else if (sorcerersNode.has("sorcerer")) {
-                JsonNode sorcererField = sorcerersNode.get("sorcerer");
-                if (sorcererField.isArray()) {
-                    for (JsonNode sNode : sorcererField) {
+            JsonNode sorcererArray = sorcerersNode.get("sorcerer");
+            if (sorcererArray != null) {
+                if (sorcererArray.isArray()) {
+                    for (JsonNode sNode : sorcererArray) {
                         addSorcerer(builder, sNode);
                     }
-                } else {
-                    addSorcerer(builder, sorcererField);
+                } else if (sorcererArray.isObject()) {
+                    addSorcerer(builder, sorcererArray);
                 }
-            }
-            else if (sorcerersNode.has("name")) {
+            } else {
                 addSorcerer(builder, sorcerersNode);
             }
         }
 
         JsonNode techniquesNode = root.get("techniques");
         if (techniquesNode != null && !techniquesNode.isNull()) {
-            if (techniquesNode.isArray()) {
-                for (JsonNode tNode : techniquesNode) {
-                    addTechnique(builder, tNode);
-                }
-            } else if (techniquesNode.has("technique")) {
-                JsonNode techniqueField = techniquesNode.get("technique");
-                if (techniqueField.isArray()) {
-                    for (JsonNode tNode : techniqueField) {
+            JsonNode techniqueArray = techniquesNode.get("technique");
+            if (techniqueArray != null) {
+                if (techniqueArray.isArray()) {
+                    for (JsonNode tNode : techniqueArray) {
                         addTechnique(builder, tNode);
                     }
-                } else {
-                    addTechnique(builder, techniqueField);
+                } else if (techniqueArray.isObject()) {
+                    addTechnique(builder, techniqueArray);
                 }
-            } else if (techniquesNode.has("name")) {
+            } else {
                 addTechnique(builder, techniquesNode);
             }
         }
@@ -88,6 +73,23 @@ public class XMLReader implements FileReader {
                     .behaviorType(getText(enemyNode, "behaviorType"))
                     .mobility(getText(enemyNode, "mobility"))
                     .escalationRisk(getText(enemyNode, "escalationRisk"));
+
+            JsonNode targetPriorityNode = enemyNode.get("targetPriority");
+            if (targetPriorityNode != null) {
+                if (targetPriorityNode.isArray()) {
+                    for (JsonNode tp : targetPriorityNode) {
+                        String value = tp.asText();
+                        if (value != null && !value.isEmpty()) {
+                            enemyBuilder.addTargetPriority(value);
+                        }
+                    }
+                } else {
+                    String value = targetPriorityNode.asText();
+                    if (value != null && !value.isEmpty()) {
+                        enemyBuilder.addTargetPriority(value);
+                    }
+                }
+            }
 
             JsonNode patternsNode = enemyNode.get("attackPatterns");
             if (patternsNode != null) {
@@ -109,7 +111,58 @@ public class XMLReader implements FileReader {
                 }
             }
 
+            JsonNode countermeasuresNode = enemyNode.get("countermeasuresUsed");
+            if (countermeasuresNode != null) {
+                JsonNode measureNode = countermeasuresNode.get("measure");
+                if (measureNode != null) {
+                    if (measureNode.isArray()) {
+                        for (JsonNode m : measureNode) {
+                            String measure = m.asText();
+                            if (measure != null && !measure.isEmpty()) {
+                                enemyBuilder.addCountermeasure(measure);
+                            }
+                        }
+                    } else {
+                        String measure = measureNode.asText();
+                        if (measure != null && !measure.isEmpty()) {
+                            enemyBuilder.addCountermeasure(measure);
+                        }
+                    }
+                }
+            }
+
             builder.addComponent(enemyBuilder.build());
+        }
+
+        JsonNode economicNode = root.get("economicAssessment");
+        if (economicNode != null && !economicNode.isNull()) {
+            EconomicComponent economic = new EconomicComponent.Builder()
+                    .totalDamageCost(getLongOrNull(economicNode, "totalDamageCost"))
+                    .infrastructureDamage(getLongOrNull(economicNode, "infrastructureDamage"))
+                    .commercialDamage(getLongOrNull(economicNode, "commercialDamage"))
+                    .transportDamage(getLongOrNull(economicNode, "transportDamage"))
+                    .recoveryEstimateDays(getIntOrNull(economicNode, "recoveryEstimateDays"))
+                    .insuranceCovered(getBooleanOrNull(economicNode, "insuranceCovered"))
+                    .build();
+            builder.addComponent(economic);
+        }
+
+        JsonNode environmentNode = root.get("environmentConditions");
+        if (environmentNode != null && !environmentNode.isNull()) {
+            EnvironmentComponent environment = new EnvironmentComponent.Builder()
+                    .weather(getText(environmentNode, "weather"))
+                    .timeOfDay(getText(environmentNode, "timeOfDay"))
+                    .visibility(getText(environmentNode, "visibility"))
+                    .cursedEnergyDensity(getIntOrNull(environmentNode, "cursedEnergyDensity"))
+                    .build();
+            builder.addComponent(environment);
+        }
+        String note = getText(root, "note");
+        if (note == null || note.isEmpty()) {
+            note = getText(root, "comment");
+        }
+        if (note != null && !note.isEmpty()) {
+            builder.setNote(note);
         }
 
         return builder.build();
@@ -118,26 +171,23 @@ public class XMLReader implements FileReader {
     private void addSorcerer(MissionBuilder builder, JsonNode node) {
         String name = getText(node, "name");
         if (name == null || name.isEmpty()) {
-            System.err.println("Warning: Skipping sorcerer without name. Node: " + node);
+            System.err.println("Warning: Skipping sorcerer without name");
             return;
         }
-
         String rank = getText(node, "rank");
         SorcererComponent sorcerer = new SorcererComponent.Builder()
                 .name(name)
                 .rank(rank != null ? rank : "UNKNOWN")
                 .build();
         builder.addSorcerer(sorcerer);
-        System.out.println("Added sorcerer: " + name);
     }
 
     private void addTechnique(MissionBuilder builder, JsonNode node) {
         String name = getText(node, "name");
         if (name == null || name.isEmpty()) {
-            System.err.println("Warning: Skipping technique without name. Node: " + node);
+            System.err.println("Warning: Skipping technique without name");
             return;
         }
-
         TechniqueComponent technique = new TechniqueComponent.Builder()
                 .name(name)
                 .type(getText(node, "type"))
@@ -145,7 +195,6 @@ public class XMLReader implements FileReader {
                 .damage(getLong(node, "damage"))
                 .build();
         builder.addTechnique(technique);
-        System.out.println("Added technique: " + name);
     }
 
     private String getText(JsonNode node, String field) {
@@ -156,5 +205,20 @@ public class XMLReader implements FileReader {
     private long getLong(JsonNode node, String field) {
         JsonNode f = node.get(field);
         return f != null && !f.isNull() ? f.asLong() : 0L;
+    }
+
+    private Long getLongOrNull(JsonNode node, String field) {
+        JsonNode f = node.get(field);
+        return (f != null && !f.isNull()) ? f.asLong() : null;
+    }
+
+    private Integer getIntOrNull(JsonNode node, String field) {
+        JsonNode f = node.get(field);
+        return (f != null && !f.isNull()) ? f.asInt() : null;
+    }
+
+    private Boolean getBooleanOrNull(JsonNode node, String field) {
+        JsonNode f = node.get(field);
+        return (f != null && !f.isNull()) ? f.asBoolean() : null;
     }
 }

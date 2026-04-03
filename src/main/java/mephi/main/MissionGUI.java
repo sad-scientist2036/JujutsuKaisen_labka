@@ -1,12 +1,7 @@
 package mephi.main;
 
 import mephi.main.mission.Mission;
-import mephi.main.reader.FileReader;
 import mephi.main.reader.ParserFactory;
-import mephi.main.reader.format.JSONReader;
-import mephi.main.reader.format.TxtReader;
-import mephi.main.reader.format.XMLReader;
-import mephi.main.reader.format.YamlReader;
 import mephi.main.report.*;
 
 import javax.swing.*;
@@ -14,7 +9,7 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
-import java.io.IOException;
+
 
 public class MissionGUI extends JFrame {
 
@@ -22,20 +17,24 @@ public class MissionGUI extends JFrame {
     private JTextArea outputArea;
     private JScrollPane scrollPane;
 
-    // Чекбоксы для выбора информации
     private JCheckBox curseCheckBox;
     private JCheckBox sorcerersCheckBox;
     private JCheckBox techniquesCheckBox;
     private JCheckBox enemyActivityCheckBox;
     private JCheckBox economicCheckBox;
+    private JCheckBox environmentCheckBox;
+    private JCheckBox timelineCheckBox;
+    private JCheckBox civilianCheckBox;
 
     private JButton generateReportButton;
     private Mission currentMission;
 
+    private static final String DEFAULT_PATH = "C:\\Users\\User\\Desktop\\missions";
+
     public MissionGUI() {
         setTitle("Анализатор миссий магов");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setSize(700, 500);
+        setSize(900, 600);
         setLocationRelativeTo(null);
 
         selectFileButton = new JButton("Выбрать файл миссии");
@@ -47,8 +46,7 @@ public class MissionGUI extends JFrame {
             }
         });
 
-        // Панель с чекбоксами
-        JPanel checkBoxPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        JPanel checkBoxPanel = new JPanel(new GridLayout(2, 4, 10, 5));
         checkBoxPanel.setBorder(BorderFactory.createTitledBorder("Выберите информацию для отчета"));
 
         curseCheckBox = new JCheckBox("Проклятие", true);
@@ -56,14 +54,19 @@ public class MissionGUI extends JFrame {
         techniquesCheckBox = new JCheckBox("Техники", true);
         enemyActivityCheckBox = new JCheckBox("Активность врага", false);
         economicCheckBox = new JCheckBox("Экономическая оценка", false);
+        environmentCheckBox = new JCheckBox("Условия среды", false);
+        timelineCheckBox = new JCheckBox("Хронология", false);
+        civilianCheckBox = new JCheckBox("Гражданские", false);
 
         checkBoxPanel.add(curseCheckBox);
         checkBoxPanel.add(sorcerersCheckBox);
         checkBoxPanel.add(techniquesCheckBox);
         checkBoxPanel.add(enemyActivityCheckBox);
         checkBoxPanel.add(economicCheckBox);
+        checkBoxPanel.add(environmentCheckBox);
+        checkBoxPanel.add(timelineCheckBox);
+        checkBoxPanel.add(civilianCheckBox);
 
-        // Кнопка формирования отчета
         generateReportButton = new JButton("Сформировать отчет");
         generateReportButton.setFont(new Font("Arial", Font.BOLD, 12));
         generateReportButton.addActionListener(new ActionListener() {
@@ -73,7 +76,6 @@ public class MissionGUI extends JFrame {
             }
         });
 
-        // Верхняя панель
         JPanel topPanel = new JPanel(new BorderLayout());
         topPanel.add(selectFileButton, BorderLayout.NORTH);
         topPanel.add(checkBoxPanel, BorderLayout.CENTER);
@@ -92,7 +94,15 @@ public class MissionGUI extends JFrame {
     }
 
     private void selectFile() {
-        JFileChooser fileChooser = new JFileChooser();
+        File defaultDir = new File(DEFAULT_PATH);
+        JFileChooser fileChooser;
+
+        if (defaultDir.exists() && defaultDir.isDirectory()) {
+            fileChooser = new JFileChooser(defaultDir);
+        } else {
+            fileChooser = new JFileChooser();
+        }
+
         fileChooser.setDialogTitle("Выберите файл миссии");
 
         int result = fileChooser.showOpenDialog(this);
@@ -107,10 +117,9 @@ public class MissionGUI extends JFrame {
         try {
             outputArea.setText("");
 
-            FileReader reader = createReader(file);
-            currentMission = reader.read(file);
+            currentMission = ParserFactory.parse(file);
 
-            outputArea.append("✅ Файл успешно загружен: " + file.getName() + "\n");
+            outputArea.append("Файл успешно загружен: " + file.getName() + "\n");
             outputArea.append("Нажмите 'Сформировать отчет' для вывода информации.\n");
 
         } catch (Exception e) {
@@ -128,10 +137,8 @@ public class MissionGUI extends JFrame {
             return;
         }
 
-        // Начинаем с базового отчета
         Report report = new SimpleReport();
 
-        // Оборачиваем декораторами в зависимости от выбранных чекбоксов
         if (curseCheckBox.isSelected()) {
             report = new CursesDecorator(report);
         }
@@ -147,40 +154,17 @@ public class MissionGUI extends JFrame {
         if (economicCheckBox.isSelected()) {
             report = new EconomicDecorator(report);
         }
-
-        // Генерируем отчет
-        String result = report.generate(currentMission);
-
-        // Выводим
-        outputArea.setText(result);
-    }
-
-    private FileReader createReader(File file) throws IOException {
-        String fileName = file.getName().toLowerCase();
-
-        if (fileName.endsWith(".json")) {
-            outputArea.append("Обнаружен JSON файл\n\n");
-            return new JSONReader();
-        } else if (fileName.endsWith(".xml")) {
-            outputArea.append("Обнаружен XML файл\n\n");
-            return new XMLReader();
-        } else if (fileName.endsWith(".txt")) {
-            outputArea.append("Обнаружен TXT файл\n\n");
-            return new TxtReader();
-        } else if (fileName.endsWith(".yaml") || fileName.endsWith(".yml")) {
-            outputArea.append("Обнаружен YAML файл\n\n");
-            return new YamlReader();
-        } else {
-            throw new IOException("Неподдерживаемый формат файла: " + fileName);
+        if (environmentCheckBox.isSelected()) {
+            report = new EnvironmentDecorator(report);
         }
-    }
+        if (timelineCheckBox.isSelected()) {
+            report = new TimelineDecorator(report);
+        }
+        if (civilianCheckBox.isSelected()) {
+            report = new CivilianDecorator(report);
+        }
 
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-                new MissionGUI().setVisible(true);
-            }
-        });
+        String result = report.generate(currentMission);
+        outputArea.setText(result);
     }
 }

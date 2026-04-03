@@ -6,6 +6,8 @@ import mephi.main.mission.builder.MissionBuilder;
 import mephi.main.mission.components.CurseComponent;
 import mephi.main.mission.components.SorcererComponent;
 import mephi.main.mission.components.TechniqueComponent;
+import mephi.main.mission.enums.SorcererRank;
+import mephi.main.mission.enums.TechniqueType;
 import mephi.main.reader.FileReader;
 import java.io.File;
 import java.io.IOException;
@@ -22,7 +24,6 @@ public class TxtReader implements FileReader {
         MissionBuilder builder = new DefaultMissionBuilder();
         Map<String, SorcererComponent> sorcerersMap = new HashMap<>();
         Map<String, TechniqueComponent> techniquesMap = new HashMap<>();
-        Map<String, String> techniqueOwners = new HashMap<>();
         String currentSorcererKey = null;
         String currentTechniqueKey = null;
 
@@ -63,6 +64,9 @@ public class TxtReader implements FileReader {
                 case "curse.threatLevel":
                     curseThreatLevel = value;
                     continue;
+                case "note":
+                    builder.setNote(value);
+                    continue;
             }
 
             if (key.startsWith("sorcerer[")) {
@@ -76,7 +80,7 @@ public class TxtReader implements FileReader {
                 } else if (key.endsWith(".rank") && currentSorcererKey != null) {
                     SorcererComponent s = sorcerersMap.get(currentSorcererKey);
                     if (s != null) {
-                        s.setRank(value);
+                        s.setRank(SorcererRank.fromString(value));
                     }
                 }
                 continue;
@@ -93,7 +97,9 @@ public class TxtReader implements FileReader {
                     techniquesMap.put(currentTechniqueKey, t);
                 } else if (key.endsWith(".type") && currentTechniqueKey != null) {
                     TechniqueComponent t = techniquesMap.get(currentTechniqueKey);
-                    if (t != null) t.setType(value);
+                    if (t != null) {
+                        t.setType(TechniqueType.fromString(value));
+                    }
                 } else if (key.endsWith(".damage") && currentTechniqueKey != null) {
                     TechniqueComponent t = techniquesMap.get(currentTechniqueKey);
                     if (t != null) {
@@ -106,7 +112,6 @@ public class TxtReader implements FileReader {
                     TechniqueComponent t = techniquesMap.get(currentTechniqueKey);
                     if (t != null) {
                         t.setOwner(ownerName);
-                        techniqueOwners.put(currentTechniqueKey, ownerName);
                     }
                 }
             }

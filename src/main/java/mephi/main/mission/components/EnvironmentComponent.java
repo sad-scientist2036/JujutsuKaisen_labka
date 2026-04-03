@@ -1,11 +1,14 @@
 package mephi.main.mission.components;
 
 import mephi.main.mission.MissionComponent;
+import mephi.main.mission.enums.Weather;
+import mephi.main.mission.enums.TimeOfDay;
+import mephi.main.mission.enums.Visibility;
 
 public class EnvironmentComponent implements MissionComponent {
-    private final String weather;
-    private final String timeOfDay;
-    private final String visibility;
+    private final Weather weather;
+    private final TimeOfDay timeOfDay;
+    private final Visibility visibility;
     private final Integer cursedEnergyDensity;
 
     private EnvironmentComponent(Builder builder) {
@@ -30,21 +33,33 @@ public class EnvironmentComponent implements MissionComponent {
         return sb.toString();
     }
 
-    public String getWeather() { return weather; }
-    public String getTimeOfDay() { return timeOfDay; }
-    public String getVisibility() { return visibility; }
+    public Weather getWeather() { return weather; }
+    public TimeOfDay getTimeOfDay() { return timeOfDay; }
+    public Visibility getVisibility() { return visibility; }
     public Integer getCursedEnergyDensity() { return cursedEnergyDensity; }
 
     public static class Builder {
-        private String weather;
-        private String timeOfDay;
-        private String visibility;
+        private Weather weather;
+        private TimeOfDay timeOfDay;
+        private Visibility visibility;
         private Integer cursedEnergyDensity;
 
-        public Builder weather(String value) { this.weather = value; return this; }
-        public Builder timeOfDay(String value) { this.timeOfDay = value; return this; }
-        public Builder visibility(String value) { this.visibility = value; return this; }
-        public Builder cursedEnergyDensity(Integer value) { this.cursedEnergyDensity = value; return this; }
+        public Builder weather(String value) {
+            this.weather = Weather.fromString(value);
+            return this;
+        }
+        public Builder timeOfDay(String value) {
+            this.timeOfDay = TimeOfDay.fromString(value);
+            return this;
+        }
+        public Builder visibility(String value) {
+            this.visibility = Visibility.fromString(value);
+            return this;
+        }
+        public Builder cursedEnergyDensity(Integer value) {
+            this.cursedEnergyDensity = value;
+            return this;
+        }
 
         public EnvironmentComponent build() {
             return new EnvironmentComponent(this);

@@ -23,7 +23,7 @@ public class SorcerersDecorator extends ReportDecorator {
                 SorcererComponent s = mission.getSorcerers().get(i);
                 sb.append("Маг #").append(i + 1).append(":\n");
                 sb.append("  Имя:    ").append(s.getName()).append("\n");
-                sb.append("  Ранг:   ").append(s.getRank()).append("\n");
+                sb.append("  Ранг:   ").append(s.getRank() != null ? s.getRank() : "Не указано").append("\n");
             }
         }
 
