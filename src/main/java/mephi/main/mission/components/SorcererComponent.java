@@ -28,11 +28,8 @@ public class SorcererComponent implements MissionComponent {
 
     public void setName(String name) { this.name = name; }
     public void setRank(SorcererRank rank) { this.rank = rank; }
-    public void addTechnique(TechniqueComponent technique) { this.techniques.add(technique); }
-
     public static class Builder {
         private final SorcererComponent component = new SorcererComponent();
-
         public Builder name(String name) {
             component.name = name;
             return this;

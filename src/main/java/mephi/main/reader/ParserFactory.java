@@ -2,11 +2,6 @@ package mephi.main.reader;
 
 import mephi.main.mission.Mission;
 import mephi.main.reader.chain.*;
-import mephi.main.reader.format.JSONReader;
-import mephi.main.reader.format.TxtReader;
-import mephi.main.reader.format.XMLReader;
-import mephi.main.reader.format.YamlReader;
-
 import java.io.File;
 import java.io.IOException;
 

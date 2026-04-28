@@ -17,8 +17,6 @@ public class LogReader implements FileReader {
     public Mission read(File file) throws IOException {
         List<String> lines = Files.readAllLines(file.toPath());
         MissionBuilder builder = new DefaultMissionBuilder();
-
-        // Для сбора данных enemyActivity
         String behaviorType = null;
         List<String> attackPatterns = new ArrayList<>();
         String mobility = null;

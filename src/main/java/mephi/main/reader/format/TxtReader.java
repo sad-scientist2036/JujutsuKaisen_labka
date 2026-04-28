@@ -35,8 +35,6 @@ public class TxtReader implements FileReader {
             if (line.isEmpty()) continue;
 
             String[] parts = line.split(":", 2);
-            if (parts.length < 2) continue;
-
             String key = parts[0].trim();
             String value = parts[1].trim();
 
