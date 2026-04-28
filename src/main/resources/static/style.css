@@ -1,0 +1,228 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+    color: #eee;
+    min-height: 100vh;
+    padding: 20px;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+header {
+    text-align: center;
+    padding: 20px;
+    border-bottom: 2px solid #e94560;
+    margin-bottom: 30px;
+}
+
+header h1 {
+    font-size: 2.5em;
+    color: #e94560;
+}
+
+header p {
+    color: #aaa;
+    margin-top: 10px;
+}
+
+.card {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    border-radius: 15px;
+    padding: 20px;
+    margin-bottom: 20px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.card h2 {
+    margin-bottom: 15px;
+    color: #e94560;
+    font-size: 1.5em;
+}
+
+.upload-area {
+    display: flex;
+    gap: 15px;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+input[type="file"] {
+    background: rgba(255, 255, 255, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 8px;
+    padding: 10px 15px;
+    color: #fff;
+    flex: 1;
+    cursor: pointer;
+}
+
+input[type="file"]::file-selector-button {
+    background: #e94560;
+    border: none;
+    border-radius: 5px;
+    padding: 8px 15px;
+    color: white;
+    cursor: pointer;
+    margin-right: 10px;
+}
+
+.btn {
+    border: none;
+    border-radius: 8px;
+    padding: 10px 20px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: all 0.3s ease;
+}
+
+.btn-primary {
+    background: #e94560;
+    color: white;
+}
+
+.btn-primary:hover {
+    background: #ff6b81;
+    transform: translateY(-2px);
+}
+
+.btn-secondary {
+    background: #533483;
+    color: white;
+}
+
+.btn-secondary:hover {
+    background: #6c4ab6;
+}
+
+.btn-small {
+    padding: 5px 12px;
+    font-size: 0.85em;
+}
+
+.btn-delete {
+    background: #dc2626;
+    border: none;
+    border-radius: 6px;
+    padding: 6px 12px;
+    color: white;
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: bold;
+    transition: all 0.3s ease;
+}
+
+.btn-delete:hover {
+    background: #ef4444;
+    transform: scale(1.02);
+}
+
+.controls {
+    display: flex;
+    gap: 15px;
+    flex-wrap: wrap;
+    align-items: center;
+}
+
+select {
+    background: rgba(255, 255, 255, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 8px;
+    padding: 10px 15px;
+    color: #fff;
+    cursor: pointer;
+    flex: 1;
+}
+
+select option {
+    background: #1a1a2e;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 15px;
+}
+
+th, td {
+    padding: 12px;
+    text-align: left;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+th {
+    background: rgba(233, 69, 96, 0.3);
+    color: #e94560;
+}
+
+td {
+    vertical-align: middle;
+}
+
+tr:hover {
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.missions-list {
+    overflow-x: auto;
+}
+
+.loading {
+    text-align: center;
+    padding: 20px;
+    color: #aaa;
+}
+
+.result-message {
+    margin-top: 15px;
+    padding: 10px;
+    border-radius: 8px;
+}
+
+.result-message.success {
+    background: rgba(0, 200, 0, 0.2);
+    border: 1px solid #00c800;
+    color: #00ff00;
+}
+
+.result-message.error {
+    background: rgba(200, 0, 0, 0.2);
+    border: 1px solid #c80000;
+    color: #ff6666;
+}
+
+.report-header {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+.report-content {
+    background: #0d1117;
+    padding: 20px;
+    border-radius: 10px;
+    overflow-x: auto;
+    font-family: 'Courier New', monospace;
+    font-size: 13px;
+    line-height: 1.5;
+    white-space: pre-wrap;
+    max-height: 500px;
+    overflow-y: auto;
+}
+
+footer {
+    text-align: center;
+    padding: 20px;
+    color: #666;
+    margin-top: 30px;
+}
