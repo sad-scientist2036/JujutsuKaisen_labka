@@ -14,7 +14,7 @@
     </header>
 
     <div class="card">
-        <h2>📤 Загрузить миссию</h2>
+        <h2> Загрузить миссию</h2>
         <div class="upload-area">
             <input type="file" id="fileInput" accept=".json,.xml,.txt,.yaml,.yml">
             <button id="uploadBtn" class="btn btn-primary">Загрузить</button>
@@ -23,23 +23,23 @@
     </div>
 
     <div class="card">
-        <h2>📊 Отчёты</h2>
+        <h2> Отчёты</h2>
         <div class="controls">
             <select id="missionSelect">
                 <option value="">-- Выберите миссию --</option>
             </select>
             <select id="reportTypeSelect">
-                <option value="simple">📄 Краткое резюме</option>
-                <option value="detailed">📑 Детализированный отчёт</option>
-                <option value="risk">⚠️ Отчёт по рискам</option>
-                <option value="full">📚 Полный отчёт</option>
+                <option value="simple"> Краткое резюме</option>
+                <option value="detailed"> Детализированный отчёт</option>
+                <option value="risk"> Отчёт по рискам</option>
+                <option value="full"> Полный отчёт</option>
             </select>
             <button id="generateReportBtn" class="btn btn-primary">Сформировать отчёт</button>
         </div>
     </div>
 
     <div class="card">
-        <h2>📋 Архив миссий</h2>
+        <h2> Архив миссий</h2>
         <div class="missions-list">
             <table id="missionsTable">
                 <thead>
@@ -57,15 +57,15 @@
                 <tr><td colspan="7" class="loading">Загрузка...</td></tr>
                 </tbody>
             </table>
-            <button id="refreshBtn" class="btn btn-secondary">🔄 Обновить список</button>
+            <button id="refreshBtn" class="btn btn-secondary"> Обновить список</button>
         </div>
     </div>
 
     <div class="card" id="reportCard" style="display: none;">
-        <h2>📄 Результат</h2>
+        <h2> Результат</h2>
         <div class="report-header">
-            <button id="copyReportBtn" class="btn btn-small">📋 Копировать</button>
-            <button id="downloadReportBtn" class="btn btn-small">💾 Скачать</button>
+            <button id="copyReportBtn" class="btn btn-small"> Копировать</button>
+            <button id="downloadReportBtn" class="btn btn-small"> Скачать</button>
         </div>
         <pre id="reportContent" class="report-content"></pre>
     </div>

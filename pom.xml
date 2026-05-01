@@ -22,7 +22,6 @@
     </properties>
 
     <dependencies>
-        <!-- Spring Boot -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
@@ -37,7 +36,6 @@
             <scope>runtime</scope>
         </dependency>
 
-        <!-- Jackson для XML и YAML (без указания версий — Spring Boot подставит свои) -->
         <dependency>
             <groupId>com.fasterxml.jackson.dataformat</groupId>
             <artifactId>jackson-dataformat-xml</artifactId>
@@ -52,12 +50,6 @@
             <version>2.5.0</version>
         </dependency>
 
-        <!-- Тесты -->
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-test</artifactId>
-            <scope>test</scope>
-        </dependency>
     </dependencies>
 
     <build>
